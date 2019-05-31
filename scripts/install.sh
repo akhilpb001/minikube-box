@@ -7,6 +7,9 @@ fi
 
 TERRAFORM_VERSION="0.11.7"
 PACKER_VERSION="1.2.4"
+MINIKUBE_VERSION="v1.0.1"
+HELM_VERSION="v2.10.0"
+
 # create new ssh key
 [[ ! -f /home/ubuntu/.ssh/mykey ]] \
 && mkdir -p /home/ubuntu/.ssh \
@@ -16,7 +19,7 @@ PACKER_VERSION="1.2.4"
 # install packages
 if [ ${REDHAT_BASED} ] ; then
   yum -y update
-  yum install -y docker ansible unzip wget
+  yum install -y docker ansible unzip wget tar
 else 
   apt-get update
   apt-get -y install docker.io ansible unzip
@@ -34,7 +37,7 @@ fi
 pip install -U awscli
 pip install -U awsebcli
 
-#terraform
+# terraform
 T_VERSION=$(/usr/local/bin/terraform -v | head -1 | cut -d ' ' -f 2 | tail -c +2)
 T_RETVAL=${PIPESTATUS[0]}
 
@@ -51,6 +54,26 @@ P_RETVAL=$?
 && wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip \
 && unzip -o packer_${PACKER_VERSION}_linux_amd64.zip -d /usr/local/bin \
 && rm packer_${PACKER_VERSION}_linux_amd64.zip
+
+# minikube
+M_VERSION=$(/usr/local/bin/minikube version | head -1 | cut -d ' ' -f 3 | tail -c +2)
+M_RETVAL=${PIPESTATUS[0]}
+
+[[ $M_VERSION != $MINIKUBE_VERSION ]] || [[ $M_RETVAL != 0 ]] \
+&& wget -qO minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64 \
+&& chmod +x minikube \
+&& cp minikube /usr/local/bin \
+&& rm minikube
+
+# helm
+H_VERSION=$(/usr/local/bin/helm version | head -1 | cut -d ',' -f 1 | cut -d ':' -f 3)
+H_RETVAL=${PIPESTATUS[0]}
+
+[[ $H_VERSION != $HELM_VERSION ]] || [[ $H_RETVAL != 0 ]] \
+&& wget -q https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz \
+&& tar -xzf helm-${HELM_VERSION}-linux-amd64.tar.gz \
+&& cp linux-amd64/helm /usr/local/bin \
+&& rm -rf linux-amd64/ helm-v2.10.0-linux-amd64.tar.gz
 
 # clean up
 if [ ! ${REDHAT_BASED} ] ; then
