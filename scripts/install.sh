@@ -8,6 +8,7 @@ fi
 TERRAFORM_VERSION="0.11.7"
 PACKER_VERSION="1.2.4"
 MINIKUBE_VERSION="v1.0.1"
+KUBE_VERSION="v1.14.1"
 HELM_VERSION="v2.10.0"
 
 # create new ssh key
@@ -19,10 +20,10 @@ HELM_VERSION="v2.10.0"
 # install packages
 if [ ${REDHAT_BASED} ] ; then
   yum -y update
-  yum install -y docker ansible unzip wget tar
+  yum install -y docker ansible unzip wget tar socat
 else 
   apt-get update
-  apt-get -y install docker.io ansible unzip
+  apt-get -y install docker.io ansible unzip socat
 fi
 # add docker privileges
 usermod -G docker ubuntu
@@ -61,9 +62,17 @@ M_RETVAL=${PIPESTATUS[0]}
 
 [[ $M_VERSION != $MINIKUBE_VERSION ]] || [[ $M_RETVAL != 0 ]] \
 && wget -qO minikube https://storage.googleapis.com/minikube/releases/${MINIKUBE_VERSION}/minikube-linux-amd64 \
-&& chmod +x minikube \
-&& cp minikube /usr/local/bin \
-&& rm minikube
+&& chmod +x ./minikube \
+&& mv minikube /usr/local/bin
+
+# kubectl
+K_VERSION=$(/usr/local/bin/kubectl version | head -1 | cut -d ',' -f 3 | cut -d ':' -f 2)
+K_RETVAL=${PIPESTATUS[0]}
+
+[[ $K_VERSION != $KUBE_VERSION ]] || [[ $K_RETVAL != 0 ]] \
+&& wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl \
+&& chmod +x ./kubectl \
+&& mv kubectl /usr/local/bin
 
 # helm
 H_VERSION=$(/usr/local/bin/helm version | head -1 | cut -d ',' -f 1 | cut -d ':' -f 3)
