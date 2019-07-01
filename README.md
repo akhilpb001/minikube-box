@@ -10,3 +10,6 @@
 * Minikube
 * Kubectl
 * Helm
+
+# Running minikube
+* To start minikube, run `sh /vagrant/scripts/start_minikube.sh`
