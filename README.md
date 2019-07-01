@@ -1,5 +1,5 @@
 # DevOps box
-* A vagrant project with an ubuntu box with the tools needed to do DevOps
+A vagrant project with an ubuntu box with the tools needed to do DevOps
 
 # Tools included
 * Terraform
@@ -12,10 +12,10 @@
 * Helm
 
 # Start vagrant
-* To start and login into vagrant box, follow the steps below:
+To start and login into vagrant box, follow the steps below:
 1. Clone the repo
 2. Cd into the repo
 3. Run `sh start.sh`
 
 # Running minikube
-* To start minikube, run `sh /vagrant/scripts/start_minikube.sh`
+To start minikube, run `sh /vagrant/scripts/start_minikube.sh`
